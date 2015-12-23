@@ -6,7 +6,7 @@ class Fluent::GeoipOutput < Fluent::BufferedOutput
   REGEXP_PLACEHOLDER_SINGLE = /^\$\{(?<geoip_key>-?[^\[]+)\[['"](?<record_key>-?[^'"]+)['"]\]\}$/
   REGEXP_PLACEHOLDER_SCAN = /['"]?(\$\{[^\}]+?\})['"]?/
 
-  GEOIP_KEYS = %w(city latitude longitude country_code3 country_code country_name dma_code area_code region)
+  GEOIP_KEYS = %w(isp city latitude longitude country_code3 country_code country_name dma_code area_code region)
 
   config_param :geoip_database, :string, :default => File.dirname(__FILE__) + '/../../../data/GeoLiteCity.dat'
   config_param :geoip_lookup_key, :string, :default => 'host'
@@ -85,7 +85,8 @@ class Fluent::GeoipOutput < Fluent::BufferedOutput
       raise Fluent::ConfigError, "geoip: required at least one option of 'tag', 'remove_tag_prefix', 'remove_tag_suffix', 'add_tag_prefix', 'add_tag_suffix'."
     end
 
-    @geoip = GeoIP::City.new(@geoip_database, :memory, false)
+    # @geoip = GeoIP::City.new(@geoip_database, :memory, false)
+    @geoip = GeoIP::ISP.new(@geoip_database)
   end
 
   def start
