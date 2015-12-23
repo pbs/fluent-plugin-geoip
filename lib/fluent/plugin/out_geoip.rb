@@ -1,7 +1,7 @@
 require 'fluent/mixin/rewrite_tag_name'
 
-class Fluent::GeoipOutput < Fluent::BufferedOutput
-  Fluent::Plugin.register_output('geoip', self)
+class Fluent::GeoispOutput < Fluent::BufferedOutput
+  Fluent::Plugin.register_output('geoisp', self)
 
   REGEXP_PLACEHOLDER_SINGLE = /^\$\{(?<geoip_key>-?[^\[]+)\[['"](?<record_key>-?[^'"]+)['"]\]\}$/
   REGEXP_PLACEHOLDER_SCAN = /['"]?(\$\{[^\}]+?\})['"]?/
@@ -53,8 +53,8 @@ class Fluent::GeoipOutput < Fluent::BufferedOutput
       end
     end
     if conf.keys.select{|k| k =~ /^enable_key_/}.size > 0
-      log.warn "geoip: 'enable_key_*' config format is obsoleted. use <record></record> directive for now."
-      log.warn "geoip: for further details referable to https://github.com/y-ken/fluent-plugin-geoip"
+      log.warn "geoisp: 'enable_key_*' config format is obsoleted. use <record></record> directive for now."
+      log.warn "geoisp: for further details referable to https://github.com/y-ken/fluent-plugin-geoip"
     end
 
     # <record></record> directive
@@ -68,7 +68,7 @@ class Fluent::GeoipOutput < Fluent::BufferedOutput
             dummy_text = Yajl::Encoder.encode('dummy_text')
             Yajl::Parser.parse(v.gsub(REGEXP_PLACEHOLDER_SCAN, dummy_text))
           rescue Yajl::ParseError => e
-            raise Fluent::ConfigError, "geoip: failed to parse '#{v}' as json."
+            raise Fluent::ConfigError, "geoisp: failed to parse '#{v}' as json."
           end
         }
         validate_json.call if json?(v.tr('\'"\\', ''))
@@ -82,7 +82,7 @@ class Fluent::GeoipOutput < Fluent::BufferedOutput
     @placeholder_expander = PlaceholderExpander.new
 
     if ( !@tag && !@remove_tag_prefix && !@remove_tag_suffix && !@add_tag_prefix && !@add_tag_suffix )
-      raise Fluent::ConfigError, "geoip: required at least one option of 'tag', 'remove_tag_prefix', 'remove_tag_suffix', 'add_tag_prefix', 'add_tag_suffix'."
+      raise Fluent::ConfigError, "geoisp: required at least one option of 'tag', 'remove_tag_prefix', 'remove_tag_suffix', 'add_tag_prefix', 'add_tag_suffix'."
     end
 
     # @geoip = GeoIP::City.new(@geoip_database, :memory, false)
@@ -143,7 +143,7 @@ class Fluent::GeoipOutput < Fluent::BufferedOutput
     begin
       return Yajl::Parser.parse(message)
     rescue Yajl::ParseError => e
-      log.info "geoip: failed to parse '#{message}' as json.", :error_class => e.class, :error => e.message
+      log.info "geoisp: failed to parse '#{message}' as json.", :error_class => e.class, :error => e.message
       return nil
     end
   end
