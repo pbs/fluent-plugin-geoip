@@ -44,10 +44,10 @@ class Fluent::GeoispOutput < Fluent::BufferedOutput
     # enable_key_* format (legacy format)
     conf.keys.select{|k| k =~ /^enable_key_/}.each do |key|
       geoip_key = key.sub('enable_key_','')
-      raise Fluent::ConfigError, "geoip: unsupported key #{geoip_key}" unless GEOIP_KEYS.include?(geoip_key)
+      raise Fluent::ConfigError, "geoisp: unsupported key #{geoip_key}" unless GEOIP_KEYS.include?(geoip_key)
       @geoip_lookup_key.zip(conf[key].split(/\s*,\s*/)).each do |lookup_field,record_key|
         if record_key.nil?
-          raise Fluent::ConfigError, "geoip: missing value found at '#{key} #{lookup_field}'"
+          raise Fluent::ConfigError, "geoisp: missing value found at '#{key} #{lookup_field}'"
         end
         @map.store(record_key, "${#{geoip_key}['#{lookup_field}']}")
       end
@@ -77,7 +77,7 @@ class Fluent::GeoispOutput < Fluent::BufferedOutput
     @placeholder_keys = @map.values.join.scan(REGEXP_PLACEHOLDER_SCAN).map{ |placeholder| placeholder[0] }.uniq
     @placeholder_keys.each do |key|
       geoip_key = key.match(REGEXP_PLACEHOLDER_SINGLE)[:geoip_key]
-      raise Fluent::ConfigError, "geoip: unsupported key #{geoip_key}" unless GEOIP_KEYS.include?(geoip_key)
+      raise Fluent::ConfigError, "geoisp: unsupported key #{geoip_key}" unless GEOIP_KEYS.include?(geoip_key)
     end
     @placeholder_expander = PlaceholderExpander.new
 
